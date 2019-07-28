@@ -1,0 +1,138 @@
+﻿@model TeamScheduler.Models.Scheduler
+
+@{
+    ViewBag.Title = "Scheduler";
+}
+<link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+<h2>Scheduler</h2>
+
+<body>
+    @Html.ValidationSummary()
+    @using (Html.BeginForm("Create","Home",Model))
+    {
+
+        <table>
+            <tr>
+                <td>
+                    @Html.DisplayNameFor(model => model.ScheduleType)
+                </td>
+                <td>
+                    @Html.DropDownListFor(model => model.ScheduleType, Model.ScheduleTypeCollection)
+                </td>
+                <td>
+                    @Html.DisplayNameFor(model => model.NumberOfGames)
+                </td>
+                <td>
+                    @Html.TextBoxFor(model => model.NumberOfGames, new { @type = "number", @style = "width:50px", @min = 1, @max = 100 })
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    &nbsp;
+                </td>
+                <td>
+                    &nbsp;
+                </td>
+                <td>
+                    @Html.DisplayNameFor(model => model.AgeDivision)
+                </td>
+                <td>
+                    @Html.DropDownListFor(model => model.AgeDivision,Model.AgeDivisionCollection)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.DisplayNameFor(model => model.StartDate)
+                </td>
+                <td>
+                    @Html.TextBoxFor(model => model.StartDate, "{0:MM/dd/yyyy}", new { id = "dpstart", @style = "width:100px" })
+                    
+                </td>
+                <td>
+                    @Html.DisplayNameFor(model => model.BracketRules)
+                </td>
+                <td>
+                    @Html.DropDownListFor(model => model.BracketRules, Model.BracketRulesCollection)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.DisplayNameFor(model => model.EndDate)
+                </td>
+                <td>
+                    @Html.TextBoxFor(model => model.EndDate, "{0:MM/dd/yyyy}", new { id = "dpend", @style = "width:100px" })
+                </td>
+                <td>
+                    &nbsp;
+                </td>
+                <td>
+                    &nbsp;
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Select Time Slots
+                </td>
+                <td>
+                    @Html.TextBoxFor(model => model.FromTime, new { @type = "time", @style = "width:100px" }) 
+                    @Html.TextBoxFor(model => model.EndTime, new { @type = "time", @style = "width:100px" }) 
+                 </td>
+                <td>
+                    @Html.DisplayNameFor(model => model.TimeBetweenGames)
+                </td>
+                <td>
+                    @Html.TextBoxFor(model => model.TimeBetweenGames, new { @type = "number", @style = "width:50px", @min = 1, @max = 10 })
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.DisplayNameFor(model => model.Location)
+                </td>
+                <td>
+                    @*@Html.DropDownListFor(model => model.Location, Model.LocationsCollection) &nbsp;@Html.ActionLink("Add Location", "AddLocation", "Home")
+                    @Html.ListBoxFor(model => model.SelectedCollection, new MultiSelectList(Model.CollectionType, "Value", "Text", Model.SelectedCollection), new { @id = "SelectedCollection" })*@
+                    @Html.ListBoxFor(model => model.SelectedLocationIds, new MultiSelectList(Model.LocationsCollection, "Value", "Text"))&nbsp;@Html.ActionLink("Add Location", "AddLocation", "Home")
+                </td>
+                <td>
+                    &nbsp;
+                </td>
+                <td>
+                    &nbsp; 
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Enable Game Days
+                </td>
+                <td>
+                    @Html.CheckBoxFor(model => model.Monday) &nbsp; @Html.DisplayNameFor(model => model.Monday)
+                    &nbsp;@Html.CheckBoxFor(model => model.Tuesday) &nbsp; @Html.DisplayNameFor(model => model.Tuesday)
+                    &nbsp;@Html.CheckBoxFor(model => model.Wednasday) &nbsp; @Html.DisplayNameFor(model => model.Wednasday)
+                    &nbsp;@Html.CheckBoxFor(model => model.Thursday) &nbsp; @Html.DisplayNameFor(model => model.Thursday)
+                    &nbsp;@Html.CheckBoxFor(model => model.Friday) &nbsp; @Html.DisplayNameFor(model => model.Friday)
+                    &nbsp;@Html.CheckBoxFor(model => model.Saturday) &nbsp; @Html.DisplayNameFor(model => model.Saturday)
+                </td>
+                <td>
+                    <input type="submit" value=@ViewData["Mode"] />
+                </td>
+                <td>
+                    &nbsp;
+                </td>
+            </tr>
+        </table>
+    }
+</body>
+
+@section scripts{
+
+    <script src="~/Scripts/jquery-ui-1.12.1.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#dpstart").datepicker();
+            $("#dpend").datepicker();
+        });
+        //$(function () {
+        //    $("#dt").datepicker();
+        //});
+    </script>
+}

@@ -1,0 +1,93 @@
+﻿
+
+@{
+    ViewBag.Title = "Locations";
+}
+
+<h2>Locations</h2>
+
+@model TeamScheduler.Models.LocationList
+@using (Html.BeginForm("CreateLocation", "Home",Model.Locations))
+    {
+<table>
+    <tr>
+        <td>
+           &nbsp;
+        </td>
+
+        <td>
+            @Html.TextBoxFor(model => model.Locations.LocationId,new { style = "display: none;" })
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.DisplayNameFor(model => model.Locations.LocationName)
+        </td>
+        
+        <td>
+            @Html.TextBoxFor(model => model.Locations.LocationName)
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.DisplayNameFor(model => model.Locations.StreetAddress)
+        </td>
+
+        <td>
+            @Html.TextBoxFor(model => model.Locations.StreetAddress)
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.DisplayNameFor(model => model.Locations.City)
+        </td>
+
+        <td>
+            @Html.TextBoxFor(model => model.Locations.City)
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.DisplayNameFor(model => model.Locations.State)
+        </td>
+
+        <td>
+            @Html.TextBoxFor(model => model.Locations.State)
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.DisplayNameFor(model => model.Locations.Zip)
+        </td>
+
+        <td>
+            @Html.TextBoxFor(model => model.Locations.Zip)
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <input type="submit" value="Update" />
+        </td>
+        <td>
+            &nbsp;
+        </td>
+    </tr>
+   </table>
+}
+
+
+<table>
+    <tr>
+    <th> Location Name</th>
+    <th>&nbsp;</th>
+    </tr>
+    @foreach (var item in Model.AllLocations)
+        {
+    <tr><td> @Html.DisplayFor(model => item.LocationName)
+        </td>
+    <td>
+       @Html.ActionLink("Edit", "AddLocation", "Home",new { id=item.LocationId},null)
+    </td>
+    </tr>
+    }
+</table>

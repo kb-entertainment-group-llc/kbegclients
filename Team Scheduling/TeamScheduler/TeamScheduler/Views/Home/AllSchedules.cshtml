@@ -1,0 +1,57 @@
+﻿@{
+    ViewBag.Title = "List";
+}
+
+<h2>All Schedules</h2>
+<div style="font-size : 8px; font-family : 'Times New Roman'">
+    @model IEnumerable<TeamScheduler.Models.Scheduler>
+
+    <!-- Using Regular HTML Tables -->
+    <table style="border-collapse:collapse; width: 100%; font-family:Verdana; font-size:small;" cellpadding="0">
+        <tr style="border-bottom: 1px solid #000000; background-color:#cac4c4">
+            <th width="120px" align="left">
+                Age Division
+            </th>
+            <th width="120px" align="left">
+                Schedule Type
+            </th>
+            <th width="120px" align="left">
+                Number of Games
+            </th>
+            <th width="120px" align="left">
+                Start Date
+            </th>
+            <th width="120px" align="left">
+                End Date
+            </th>
+            
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            <tr style="border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000; ">
+                <td>
+                    @Html.ActionLink(item.AgeDivision, "Scheduler", "Home", new { id = item.ScheduleId }, null)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ScheduleType)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.NumberOfGames)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.StartDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.EndDate)
+                </td>
+               
+            </tr>
+        }
+    </table>
+</div>
+<br /><br />
+<div>
+    @Html.ActionLink("Add Tournament", "Scheduler", "Home")
+</div>
+
