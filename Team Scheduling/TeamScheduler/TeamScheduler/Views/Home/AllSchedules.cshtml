@@ -24,6 +24,9 @@
             <th width="120px" align="left">
                 End Date
             </th>
+            <th width="120px" align="left">
+                &nbsp;
+            </th>
             
         </tr>
 
@@ -44,6 +47,9 @@
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.EndDate)
+                </td>
+                <td>
+                    @Html.ActionLink("Create Tournament Schedule", "CreateTournamentSchedule", "Home", new { id = item.ScheduleId }, null)
                 </td>
                
             </tr>
