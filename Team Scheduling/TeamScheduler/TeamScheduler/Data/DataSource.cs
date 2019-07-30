@@ -4,6 +4,8 @@ using System.Linq;
 using System.Web;
 using TeamScheduler.Models;
 using MySql.Data.MySqlClient;
+using System.Net;
+using System.Xml;
 
 namespace TeamScheduler.Data
 {
@@ -49,6 +51,135 @@ namespace TeamScheduler.Data
                 mCn.Close();
             }
         }
+
+        public void CreateTournamentSchedule(Scheduler Sch)
+        {
+           List<int> teams= GetTeamsInSchedule(Sch.ScheduleId);
+           List<string> Locations = GetLocationsByScheduleId(Sch.ScheduleId);
+           DateTime StartDate = Sch.StartDate.Value;
+           DateTime EndDate = Sch.EndDate.Value;
+           TimeSpan FromTime = Sch.FromTime;
+           TimeSpan ToTime = Sch.EndTime;
+           DateTime GameDate=StartDate;
+           TimeSpan GameTime=FromTime;
+           int TimeBetweenGames = Sch.TimeBetweenGames;
+           int TotalTeams = teams.Count;
+            int TeamGames = teams.Count / 2;
+           int counter=0;
+           TimeSpan GameDuration = new TimeSpan(1, 10, 0);
+           TimeSpan DailyEndTime = ToTime.Subtract(GameDuration);
+           int[] te = new int[TotalTeams-1];
+           for (int i = 0; i < TotalTeams - 1;i++ )
+           {
+               te[i] = teams[i];
+           }
+           
+            
+            do
+               {
+                   if (CanPlayGameOnDay(GameDate, Sch))
+                   {
+                       for (int i = 0; i < Locations.Count; i++)
+                       {
+                           do
+                           {
+                               ScehduleGame(Sch.ScheduleId, teams[counter], teams[counter + 1], GameDate, GameTime, Convert.ToInt16(Locations[i]));
+                               GameTime = GameTime.Add(GameDuration);
+                               GameTime = GameTime.Add(new TimeSpan(0, TimeBetweenGames, 0));
+                               counter = counter + 2;
+                           } while (GameTime > DailyEndTime);
+                       }
+                   }
+                   GameDate = GameDate.AddDays(1);
+               }
+               while (GameDate <= EndDate);
+           
+        }
+
+        private void ScehduleGame(int ScheduleId,int TeamOne,int TeamTwo,DateTime GameDate,TimeSpan StartTime,int LocationId)
+        {
+            using (MySqlConnection mCn = new MySqlConnection(connectionString))
+            {
+                mCn.Open();
+                string sql = "insert into tournamentschedule(teamone, teamtwo, locationid, gamedate, starttime,scheduleid) values (" + TeamOne + "," + TeamTwo + "," + LocationId + ",'" + GameDate.ToString("yyyy/MM/dd") + "'," + ScheduleId + ",'" + StartTime + "')";
+                MySqlCommand cmd = new MySqlCommand(sql, mCn);
+                cmd.ExecuteNonQuery();
+                mCn.Close();
+            }
+        }
+        bool CanPlayGameOnDay(DateTime GameDate,Scheduler Sch)
+        {
+            switch (GameDate.DayOfWeek)
+            {
+                case DayOfWeek.Sunday :
+                    if (Sch.Sunday) return true;
+                    break;
+                case DayOfWeek.Monday:
+                    if (Sch.Monday) return true;
+                    break;
+                case DayOfWeek.Tuesday:
+                    if (Sch.Tuesday) return true;
+                    break;
+                case DayOfWeek.Wednesday:
+                    if (Sch.Wednasday) return true;
+                    break;
+                case DayOfWeek.Thursday:
+                    if (Sch.Thursday) return true;
+                    break;
+                case DayOfWeek.Friday:
+                    if (Sch.Friday) return true;
+                    break;
+                case DayOfWeek.Saturday:
+                    if (Sch.Saturday) return true;
+                    break;
+                default :
+                    return false;
+                    break;
+            }
+
+            return false;
+        }
+        public bool IsDistanceBetweenLocationsOk(List<string> Locations)
+        {
+            int LocationCount = Locations.Count();
+            String[] Addresses = new String[LocationCount];
+            for (int i = 0; i < LocationCount; i++)
+            {
+                var address = GetLocationById(Convert.ToInt16(Locations[i]));
+                Addresses[i] = address.StreetAddress + "," + address.Zip;
+            }
+            int count = 0;
+            
+            do
+            {
+                for (int i = count; i < LocationCount; i++)
+                {
+                    double distanceBetweenLocations = GetDistance(Addresses[i], Addresses[i + 1]);
+                    if (distanceBetweenLocations > 5) return false;
+                }
+                count++;
+
+            } while (count > LocationCount - 1);
+            return true;
+
+        }
+
+        double GetDistance(string AddressOne, string AddressTwo)
+        {
+            string requestUri = string.Format("https://maps.googleapis.com/maps/api/distancematrix/xml?units=imperial&origins=" + AddressOne + "&destinations=" + AddressTwo + "&key=AIzaSyCG40GGV0La-19u8JxCMddds-fXc1iZFUA");
+
+            var client = new WebClient();
+            var content = client.DownloadString(requestUri);
+            XmlDocument doc = new XmlDocument();
+
+            doc.LoadXml(content);
+            XmlNode node = doc.DocumentElement.SelectSingleNode("/DistanceMatrixResponse/row/element/distance/text");
+
+            var distance = node.InnerXml;
+            distance=distance.Replace("mi", "");
+            return Convert.ToDouble(distance);
+        }
+        
 
         public void CreateLocation(Locations Loc)
         {
@@ -188,23 +319,22 @@ namespace TeamScheduler.Data
                 return new Locations();
             }
         }
-        //public List<Locations> GetAllLocations()
-        //{
-        //    List<Locations> Model = new List<Locations>();
-        //    using (MySqlConnection mCn = new MySqlConnection(connectionString))
-        //    {
-        //        mCn.Open();
-        //        string sql = "select * from Locations";
-        //        MySqlCommand cmd = new MySqlCommand(sql, mCn);
-        //        MySqlDataReader rdr = cmd.ExecuteReader();
-        //        while (rdr.Read())
-        //        {
-        //            Locations sch = new Locations { LocationId = (int)rdr["LocationId"], LocationName = (string)rdr["LocationName"] };
-        //            Model.Add(sch);
-        //        }
-        //        mCn.Close();
-        //        return Model;
-        //    }
-        //}
+        
+        List<int> GetTeamsInSchedule(int ScheduleId)
+        {
+            using (MySqlConnection mCn = new MySqlConnection(connectionString))
+            {
+                mCn.Open();
+                string sql = "select TeamId from tournamentsteams where scheduleid=" + ScheduleId;
+                MySqlCommand cmd = new MySqlCommand(sql, mCn);
+                MySqlDataReader rdr = cmd.ExecuteReader();
+                List<int> Teams = new List<int>();
+                while (rdr.Read())
+                {
+                    Teams.Add(Convert.ToInt16(rdr["TeamId"]));
+                }
+                return Teams;
+            }
+        }
     }
 }

@@ -52,6 +52,20 @@ namespace TeamScheduler.Controllers
             return View(Model);
         }
 
+        public ActionResult CreateTournamentSchedule(String id = "")
+        {
+            ViewBag.Message = "Your schedule page.";
+            Scheduler Model;
+            if (!string.IsNullOrEmpty(id))
+            {
+                DataSource ds = new DataSource();
+                Model = ds.GetScheduleById(Convert.ToInt16(id));
+                ds.CreateTournamentSchedule(Model);
+                return View(Model);
+            }
+            return View();
+        }
+
         public ActionResult AllSchedules()
         {
             ViewBag.Message = "Your schedule page.";
@@ -81,16 +95,16 @@ namespace TeamScheduler.Controllers
         [HttpPost]
         public ActionResult Create(Scheduler Sch)
         {
-            string requestUri = string.Format("https://maps.googleapis.com/maps/api/distancematrix/xml?units=imperial&origins=15757 N 90th Pl,85260C&destinations=21001 N Tatum Blvd,85050&key=AIzaSyCG40GGV0La-19u8JxCMddds-fXc1iZFUA");
+            //string requestUri = string.Format("https://maps.googleapis.com/maps/api/distancematrix/xml?units=imperial&origins=15757 N 90th Pl,85260C&destinations=21001 N Tatum Blvd,85050&key=AIzaSyCG40GGV0La-19u8JxCMddds-fXc1iZFUA");
 
-            var client = new WebClient();
-            var content = client.DownloadString(requestUri);
-            XmlDocument doc = new XmlDocument();
+            //var client = new WebClient();
+            //var content = client.DownloadString(requestUri);
+            //XmlDocument doc = new XmlDocument();
 
-            doc.LoadXml(content);
-            XmlNode node = doc.DocumentElement.SelectSingleNode("/DistanceMatrixResponse/row/element/distance/text");
+            //doc.LoadXml(content);
+            //XmlNode node = doc.DocumentElement.SelectSingleNode("/DistanceMatrixResponse/row/element/distance/text");
 
-            var t = node.InnerXml;
+            //var t = node.InnerXml;
             ModelState.Clear();
             DataSource ds = new DataSource();
             if (Sch.LocationsCollection ==null ||Sch.LocationsCollection.Count()==0)
@@ -104,6 +118,11 @@ namespace TeamScheduler.Controllers
                 if (!ds.ValidateBeforeCreateSchedule(Sch))
                 {
                     ModelState.AddModelError("", "Age Division already exists");
+                    return View("Scheduler", Sch);
+                }
+                if (!ds.IsDistanceBetweenLocationsOk(Sch.SelectedLocationIds.ToList()))
+                {
+                    ModelState.AddModelError("", "Distance between Locations are more than allowed limit");
                     return View("Scheduler", Sch);
                 }
                 ds.CreateSchedule(Sch);
