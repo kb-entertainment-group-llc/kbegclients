@@ -66,7 +66,7 @@ namespace TeamScheduler.Data
            TimeSpan GameTime=FromTime;
            int TimeBetweenGames = Sch.TimeBetweenGames;
            int TotalTeams = teams.Count;
-            int TeamGames = teams.Count / 2;
+           // int TeamGames = teams.Count / 2;
            int counter=0;
            TimeSpan GameDuration = new TimeSpan(0, 30, 0);
            TimeSpan DailyEndTime = ToTime.Subtract(GameDuration);
@@ -75,7 +75,10 @@ namespace TeamScheduler.Data
            {
                te[i] = teams[i];
            }
+            if (TotalTeams%2==0)
+            {
 
+            }
            DoLogic(TotalTeams);
            int cgame = 0;
             do
@@ -107,10 +110,18 @@ namespace TeamScheduler.Data
 
         private void DoLogic(int tot)
         {
+            bool isOdd = false;
             int[] g = new int[tot];
             for (int i = 0; i < tot; i++)
             {
                 g[i] = i + 1;
+            }
+            if (tot%2!=0)
+            {
+                isOdd = true;
+                Array.Resize(ref  g, g.Length + 1);
+                g[g.Length - 1] = -1;
+                tot = tot + 1;
             }
             List<int> lst = g.ToList();
             lst.RemoveAt(0);
@@ -144,7 +155,10 @@ namespace TeamScheduler.Data
         {
             for (int i = 0; i < a.Length; i++)
             {
-                gm.Add(a[i].ToString() + "," + b[i].ToString());
+                if (a[i] != -1 && b[i] != -1)
+                {
+                    gm.Add(a[i].ToString() + "," + b[i].ToString());
+                }
             }
         }
         private void ScehduleGame(int ScheduleId,int TeamOne,int TeamTwo,DateTime GameDate,TimeSpan StartTime,int LocationId)
