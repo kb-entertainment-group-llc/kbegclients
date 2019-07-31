@@ -64,7 +64,7 @@ namespace TeamScheduler.Models
         public bool Friday { get; set; }
         public bool Saturday { get; set; }
 
-        //public List<string> ScheduleTypeCollection { get; set; }
+        public bool IsTournamentScheduleCreated { get; set; }
 
         public System.Web.Mvc.SelectList ScheduleTypeCollection = new System.Web.Mvc.SelectList(new[]
         {

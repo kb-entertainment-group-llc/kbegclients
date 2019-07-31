@@ -61,7 +61,19 @@ namespace TeamScheduler.Controllers
                 DataSource ds = new DataSource();
                 Model = ds.GetScheduleById(Convert.ToInt16(id));
                 ds.CreateTournamentSchedule(Model);
-                return View(Model);
+            }
+            return RedirectToAction("ViewTournamentSchedule", "Home", new { id = id });
+            
+        }
+        public ActionResult ViewTournamentSchedule(String id = "")
+        {
+            ViewBag.Message = "Your schedule page.";
+            TournamentSchedule Model;
+            if (!string.IsNullOrEmpty(id))
+            {
+                DataSource ds = new DataSource();
+               
+                return View("TournamentSchedule", ds.GetTournamentScheduleById(Convert.ToInt16(id)));
             }
             return View();
         }
@@ -113,7 +125,7 @@ namespace TeamScheduler.Controllers
                 return View("Scheduler", Sch);
             }
             
-            if (ViewData["Mode"]==null || Convert.ToString(ViewData["Mode"]) == "CreateSchedule")
+            if (Convert.ToString(ViewData["Mode"]) == "CreateSchedule")
             {
                 if (!ds.ValidateBeforeCreateSchedule(Sch))
                 {

@@ -49,7 +49,14 @@
                     @Html.DisplayFor(modelItem => item.EndDate)
                 </td>
                 <td>
-                    @Html.ActionLink("Create Tournament Schedule", "CreateTournamentSchedule", "Home", new { id = item.ScheduleId }, null)
+                    @if (item.IsTournamentScheduleCreated) { 
+                        @Html.ActionLink("Views Tournament Schedule", "ViewTournamentSchedule", "Home", new { id = item.ScheduleId }, null)
+                    }
+                    else
+                    {
+                        @Html.ActionLink("Create Tournament Schedule", "CreateTournamentSchedule", "Home", new { id = item.ScheduleId }, null)
+
+                    }
                 </td>
                
             </tr>

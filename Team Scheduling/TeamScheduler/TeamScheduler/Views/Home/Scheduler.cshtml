@@ -81,7 +81,7 @@
                     @Html.DisplayNameFor(model => model.TimeBetweenGames)
                 </td>
                 <td>
-                    @Html.TextBoxFor(model => model.TimeBetweenGames, new { @type = "number", @style = "width:50px", @min = 1, @max = 10 })
+                    @Html.TextBoxFor(model => model.TimeBetweenGames, new { @type = "number", @style = "width:50px", @min = 1, @max = 100 })
                 </td>
             </tr>
             <tr>
@@ -111,6 +111,7 @@
                     &nbsp;@Html.CheckBoxFor(model => model.Thursday) &nbsp; @Html.DisplayNameFor(model => model.Thursday)
                     &nbsp;@Html.CheckBoxFor(model => model.Friday) &nbsp; @Html.DisplayNameFor(model => model.Friday)
                     &nbsp;@Html.CheckBoxFor(model => model.Saturday) &nbsp; @Html.DisplayNameFor(model => model.Saturday)
+                    &nbsp;@Html.CheckBoxFor(model => model.Sunday) &nbsp; @Html.DisplayNameFor(model => model.Sunday)
                 </td>
                 <td>
                     <input type="submit" value=@ViewData["Mode"] />
