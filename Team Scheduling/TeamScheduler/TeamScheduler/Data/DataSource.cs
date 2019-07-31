@@ -12,6 +12,8 @@ namespace TeamScheduler.Data
     public class DataSource 
     {
         string connectionString = "Server = localhost; Port=3306; Database = TeamScheduling; Uid = root; Pwd = !QAZ2wsx;";
+        List<string> gm = new List<string>();
+
         public bool ValidateBeforeCreateSchedule(Scheduler Sch)
         {
             using (MySqlConnection mCn = new MySqlConnection(connectionString))
@@ -66,28 +68,33 @@ namespace TeamScheduler.Data
            int TotalTeams = teams.Count;
             int TeamGames = teams.Count / 2;
            int counter=0;
-           TimeSpan GameDuration = new TimeSpan(1, 10, 0);
+           TimeSpan GameDuration = new TimeSpan(0, 30, 0);
            TimeSpan DailyEndTime = ToTime.Subtract(GameDuration);
            int[] te = new int[TotalTeams-1];
            for (int i = 0; i < TotalTeams - 1;i++ )
            {
                te[i] = teams[i];
            }
-           
-            
+
+           DoLogic(TotalTeams);
+           int cgame = 0;
             do
                {
-                   if (CanPlayGameOnDay(GameDate, Sch))
+                if (CanPlayGameOnDay(GameDate, Sch))
                    {
                        for (int i = 0; i < Locations.Count; i++)
                        {
+                           GameTime = FromTime;
                            do
                            {
-                               ScehduleGame(Sch.ScheduleId, teams[counter], teams[counter + 1], GameDate, GameTime, Convert.ToInt16(Locations[i]));
+                               if (cgame >= gm.Count) break;   
+                               string[] s = gm[cgame].Split(',');
+                               ScehduleGame(Sch.ScheduleId, teams[Convert.ToInt16(s[0])-1], teams[Convert.ToInt16(s[1])-1], GameDate, GameTime, Convert.ToInt16(Locations[i]));
                                GameTime = GameTime.Add(GameDuration);
                                GameTime = GameTime.Add(new TimeSpan(0, TimeBetweenGames, 0));
                                counter = counter + 2;
-                           } while (GameTime > DailyEndTime);
+                               cgame++;
+                           } while (GameTime <= DailyEndTime);
                        }
                    }
                    GameDate = GameDate.AddDays(1);
@@ -96,12 +103,56 @@ namespace TeamScheduler.Data
            
         }
 
+ 
+
+        private void DoLogic(int tot)
+        {
+            int[] g = new int[tot];
+            for (int i = 0; i < tot; i++)
+            {
+                g[i] = i + 1;
+            }
+            List<int> lst = g.ToList();
+            lst.RemoveAt(0);
+            for (int v = 0; v < lst.Count; v++)
+            {
+                int[] na = lst.ToArray();
+                int[] a = new int[tot / 2];
+                int[] b = new int[tot / 2];
+                a[0] = g[0];
+                for (int i = 1; i < tot / 2; i++)
+                {
+                    a[i] = na[i - 1];
+                }
+
+                int j = 0;
+                int ci = tot / 2 - 1;
+                for (int i = tot - 1; i >= tot / 2; i--)
+                {
+                    b[j] = na[i - 1];
+                    ci--;
+                    j++;
+                }
+                var tmp = lst[lst.Count - 1];
+                lst.RemoveAt(lst.Count - 1);
+                lst.Insert(0, tmp);
+                Schedule(a, b);
+            }
+        }
+
+        private void Schedule(int[] a, int[] b)
+        {
+            for (int i = 0; i < a.Length; i++)
+            {
+                gm.Add(a[i].ToString() + "," + b[i].ToString());
+            }
+        }
         private void ScehduleGame(int ScheduleId,int TeamOne,int TeamTwo,DateTime GameDate,TimeSpan StartTime,int LocationId)
         {
             using (MySqlConnection mCn = new MySqlConnection(connectionString))
             {
                 mCn.Open();
-                string sql = "insert into tournamentschedule(teamone, teamtwo, locationid, gamedate, starttime,scheduleid) values (" + TeamOne + "," + TeamTwo + "," + LocationId + ",'" + GameDate.ToString("yyyy/MM/dd") + "'," + ScheduleId + ",'" + StartTime + "')";
+                string sql = "insert into tournamentschedule(teamone, teamtwo, locationid, gamedate, starttime,scheduleid) values (" + TeamOne + "," + TeamTwo + "," + LocationId + ",'" + GameDate.ToString("yyyy/MM/dd") + "','" + StartTime + "'," + ScheduleId + ")";
                 MySqlCommand cmd = new MySqlCommand(sql, mCn);
                 cmd.ExecuteNonQuery();
                 mCn.Close();
@@ -208,7 +259,7 @@ namespace TeamScheduler.Data
             using (MySqlConnection mCn = new MySqlConnection(connectionString))
             {
                 mCn.Open();
-                string sql = @"update Scheduler set NumberOfGames=" + Sch.NumberOfGames + ",ScheduleType='" + Sch.ScheduleType + "',Age='" + Sch.AgeDivision + "',StartDate='" + Sch.StartDate.Value.ToString("yyyy/MM/dd") + "',EndDate='" + Sch.EndDate.Value.ToString("yyyy/MM/dd") + "',BracketRule='" + Sch.BracketRules + "',StartTime=" + Sch.FromTime + ",EndTime=" + Sch.EndTime + ",TimeBetweenGames='" + Sch.TimeBetweenGames + "',Monday=" + Sch.Monday + ",Tuesday=" + Sch.Tuesday + ",Wednasday=" + Sch.Wednasday + ",Thursday=" + Sch.Thursday + ",Friday=" + Sch.Friday + ",Saturday=" + Sch.Saturday + ",Sunday=" + Sch.Sunday + " where scheduleid = " + Sch.ScheduleId;  
+                string sql = @"update Scheduler set NumberOfGames=" + Sch.NumberOfGames + ",ScheduleType='" + Sch.ScheduleType + "',Age='" + Sch.AgeDivision + "',StartDate='" + Sch.StartDate.Value.ToString("yyyy/MM/dd") + "',EndDate='" + Sch.EndDate.Value.ToString("yyyy/MM/dd") + "',BracketRule='" + Sch.BracketRules + "',StartTime='" + Sch.FromTime + "',EndTime='" + Sch.EndTime + "',TimeBetweenGames='" + Sch.TimeBetweenGames + "',Monday=" + Sch.Monday + ",Tuesday=" + Sch.Tuesday + ",Wednasday=" + Sch.Wednasday + ",Thursday=" + Sch.Thursday + ",Friday=" + Sch.Friday + ",Saturday=" + Sch.Saturday + ",Sunday=" + Sch.Sunday + " where scheduleid = " + Sch.ScheduleId;  
                 MySqlCommand cmd = new MySqlCommand(sql, mCn);
                 cmd.ExecuteNonQuery();
 
@@ -235,8 +286,17 @@ namespace TeamScheduler.Data
                 MySqlDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
-                    Scheduler sch = new Scheduler { ScheduleId = (int)rdr["ScheduleId"], AgeDivision = rdr["Age"].ToString(),ScheduleType = rdr["ScheduleType"].ToString(), NumberOfGames = (int)rdr["NumberOfGames"], StartDate = (DateTime)rdr["StartDate"], EndDate = (DateTime)rdr["EndDate"] };
+                    Scheduler sch = new Scheduler { ScheduleId = (int)rdr["ScheduleId"], AgeDivision = rdr["Age"].ToString(), ScheduleType = rdr["ScheduleType"].ToString(), NumberOfGames = (int)rdr["NumberOfGames"], StartDate = (DateTime)rdr["StartDate"], EndDate = (DateTime)rdr["EndDate"], IsTournamentScheduleCreated=false };
                     Model.Add(sch);
+                }
+                rdr.Close();
+                foreach (var t in Model)
+                {
+                    sql = "select * from tournamentschedule where scheduleid=" + t.ScheduleId;
+                    cmd = new MySqlCommand(sql, mCn);
+                    rdr = cmd.ExecuteReader();
+                    if (rdr.Read()) t.IsTournamentScheduleCreated = true;
+                    rdr.Close();
                 }
                 mCn.Close();
                 return Model;
@@ -279,6 +339,27 @@ namespace TeamScheduler.Data
                      return Model;
                 }
                 return new Scheduler();
+            }
+        }
+
+        public List<TournamentSchedule> GetTournamentScheduleById(int ScheduleId)
+        {
+            List<TournamentSchedule> lst=new List<TournamentSchedule>();
+            using (MySqlConnection mCn = new MySqlConnection(connectionString))
+            {
+                mCn.Open();
+                string sql = "select a.teamname as teamone,b.teamname as teamtwo,l.locationname,t.gamedate,t.starttime from tournamentschedule t inner join locations l on t.locationid=l.locationid inner join teams a on t.teamone=a.teamid inner join teams b on t.teamtwo=b.teamid where scheduleid=" + ScheduleId;
+                MySqlCommand cmd = new MySqlCommand(sql, mCn);
+                MySqlDataReader rdr = cmd.ExecuteReader();
+                //rdr.Read();
+                while (rdr.Read())
+                {
+                    TournamentSchedule Model = new TournamentSchedule { TeamOne = (string)rdr["teamone"], TeamTwo = (string)rdr["teamtwo"].ToString(), Location = (string)rdr["locationname"], GameDate = Convert.ToDateTime(rdr["gamedate"]).ToShortDateString(), GameTime = (TimeSpan)rdr["starttime"] };
+                    lst.Add(Model);
+                }
+                rdr.Close();
+                mCn.Close();
+                return lst;
             }
         }
 

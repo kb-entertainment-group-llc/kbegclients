@@ -193,6 +193,7 @@
     <Compile Include="Models\LocationList.cs" />
     <Compile Include="Models\Locations.cs" />
     <Compile Include="Models\Scheduler.cs" />
+    <Compile Include="Models\TournamentSchedule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -298,6 +299,7 @@
     <Content Include="Views\Home\Scheduler.cshtml" />
     <Content Include="Views\Home\AllSchedules.cshtml" />
     <Content Include="Views\Home\Locations.cshtml" />
+    <Content Include="Views\Home\TournamentSchedule.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

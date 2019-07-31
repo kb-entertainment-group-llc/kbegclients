@@ -1,0 +1,123 @@
+﻿@model IEnumerable<TeamScheduler.Models.TournamentSchedule>
+
+@{
+    ViewBag.Title = "TournamentSchedule";
+}
+
+<h2>Tournament Schedule</h2>
+@*@foreach (var item in Model)
+{
+    <table>
+        <tr style="border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000;border-top: 1px solid #000000; ">
+            <td>
+                @Html.Label(item.TeamOne + " vs " + item.TeamTwo)
+            </td>
+        </tr>
+        <tr style="border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000; ">
+            <td>
+                @Html.DisplayFor(modelItem => item.Location)
+            </td>
+        </tr>
+        <tr style="border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000; ">
+            <td>
+                @Html.Label(item.GameDate + " " + item.GameTime)
+            </td>
+        </tr>
+        
+    </table>*@
+@for (int i=0;i<Model.Count()-1;i=i+4)
+{
+    <table>
+        <tr>
+            <td>
+                @if(i<Model.Count())
+                { 
+                    <table>
+                        <tr style="border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000;border-top: 1px solid #000000; ">
+                            <td>
+                                @Html.Label(Model.ToList()[i].TeamOne + " vs " + Model.ToList()[i].TeamTwo)
+                            </td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000; ">
+                            <td>
+                                @Html.Label(Model.ToList()[i].Location)
+                            </td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000; ">
+                            <td>
+                                @Html.Label(Model.ToList()[i].GameDate + " " + Model.ToList()[i].GameTime)
+                            </td>
+                        </tr>
+                    </table>
+                }
+            </td>
+            <td>
+                @if(i+1<Model.Count())
+                {
+                <table>
+                    <tr style="border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000;border-top: 1px solid #000000; ">
+                        <td>
+                            @Html.Label(Model.ToList()[i+1].TeamOne + " vs " + Model.ToList()[i+1].TeamTwo)
+                        </td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000; ">
+                        <td>
+                            @Html.Label(Model.ToList()[i+1].Location)
+                        </td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000; ">
+                        <td>
+                            @Html.Label(Model.ToList()[i+1].GameDate + " " + Model.ToList()[i+1].GameTime)
+                        </td>
+                    </tr>
+                </table>
+                }
+            </td>
+            <td>
+                @if(i+2<Model.Count())
+                {
+                <table>
+                    <tr style="border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000;border-top: 1px solid #000000; ">
+                        <td>
+                            @Html.Label(Model.ToList()[i+2].TeamOne + " vs " + Model.ToList()[i+2].TeamTwo)
+                        </td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000; ">
+                        <td>
+                            @Html.Label(Model.ToList()[i+2].Location)
+                        </td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000; ">
+                        <td>
+                            @Html.Label(Model.ToList()[i+2].GameDate + " " + Model.ToList()[i+2].GameTime)
+                        </td>
+                    </tr>
+                </table>
+                }
+            </td>
+            <td>
+                @if(i+3<Model.Count())
+                {
+                <table>
+                    <tr style="border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000;border-top: 1px solid #000000; ">
+                        <td>
+                            @Html.Label(Model.ToList()[i + 3].TeamOne + " vs " + Model.ToList()[i + 3].TeamTwo)
+                        </td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000; ">
+                        <td>
+                            @Html.Label(Model.ToList()[i + 3].Location)
+                        </td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000; ">
+                        <td>
+                            @Html.Label(Model.ToList()[i + 3].GameDate + " " + Model.ToList()[i + 3].GameTime)
+                        </td>
+                    </tr>
+                </table>
+                }
+            </td>
+        </tr>
+    </table>
+    <br />
+}
