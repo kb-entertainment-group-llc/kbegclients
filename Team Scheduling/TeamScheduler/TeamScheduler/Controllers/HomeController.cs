@@ -67,8 +67,10 @@ namespace TeamScheduler.Controllers
         }
         public ActionResult ViewTournamentSchedule(String id = "")
         {
-            ViewBag.Message = "Your schedule page.";
-            TournamentSchedule Model;
+            Scheduler Sch = new DataSource().GetScheduleById(Convert.ToInt16(id));
+            ViewBag.Age = Sch.AgeDivision;
+            ViewBag.StartDate = Sch.StartDate.Value.ToShortDateString();
+            ViewBag.EndDate = Sch.EndDate.Value.ToShortDateString();
             if (!string.IsNullOrEmpty(id))
             {
                 DataSource ds = new DataSource();
