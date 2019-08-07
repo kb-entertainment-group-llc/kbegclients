@@ -78,10 +78,10 @@
                     @Html.TextBoxFor(model => model.EndTime, new { @type = "time", @style = "width:100px" }) 
                  </td>
                 <td>
-                    @Html.DisplayNameFor(model => model.TimeBetweenGames)
+                    @Html.DisplayNameFor(model => model.GameDuration)
                 </td>
                 <td>
-                    @Html.TextBoxFor(model => model.TimeBetweenGames, new { @type = "number", @style = "width:50px", @min = 1, @max = 100 })
+                    @Html.TextBoxFor(model => model.GameDuration, new { @type = "number", @style = "width:50px", @min = 1, @max = 100 })
                 </td>
             </tr>
             <tr>
@@ -94,10 +94,10 @@
                     @Html.ListBoxFor(model => model.SelectedLocationIds, new MultiSelectList(Model.LocationsCollection, "Value", "Text"))&nbsp;@Html.ActionLink("Add Location", "AddLocation", "Home")
                 </td>
                 <td>
-                    &nbsp;
+                    @Html.DisplayNameFor(model => model.TimeBetweenGames)
                 </td>
                 <td>
-                    &nbsp; 
+                    @Html.TextBoxFor(model => model.TimeBetweenGames, new { @type = "number", @style = "width:50px", @min = 1, @max = 100 })
                 </td>
             </tr>
             <tr>

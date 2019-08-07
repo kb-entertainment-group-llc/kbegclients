@@ -109,16 +109,6 @@ namespace TeamScheduler.Controllers
         [HttpPost]
         public ActionResult Create(Scheduler Sch)
         {
-            //string requestUri = string.Format("https://maps.googleapis.com/maps/api/distancematrix/xml?units=imperial&origins=15757 N 90th Pl,85260C&destinations=21001 N Tatum Blvd,85050&key=AIzaSyCG40GGV0La-19u8JxCMddds-fXc1iZFUA");
-
-            //var client = new WebClient();
-            //var content = client.DownloadString(requestUri);
-            //XmlDocument doc = new XmlDocument();
-
-            //doc.LoadXml(content);
-            //XmlNode node = doc.DocumentElement.SelectSingleNode("/DistanceMatrixResponse/row/element/distance/text");
-
-            //var t = node.InnerXml;
             ModelState.Clear();
             DataSource ds = new DataSource();
             if (Sch.LocationsCollection ==null ||Sch.LocationsCollection.Count()==0)
@@ -127,22 +117,33 @@ namespace TeamScheduler.Controllers
                 return View("Scheduler", Sch);
             }
             
-            if (Convert.ToString(ViewData["Mode"]) == "CreateSchedule")
+            if (Sch.ScheduleId<=0)
             {
                 if (!ds.ValidateBeforeCreateSchedule(Sch))
                 {
                     ModelState.AddModelError("", "Age Division already exists");
                     return View("Scheduler", Sch);
                 }
-                if (!ds.IsDistanceBetweenLocationsOk(Sch.SelectedLocationIds.ToList()))
+                if (Sch.SelectedLocationIds.Count() > 1)
                 {
-                    ModelState.AddModelError("", "Distance between Locations are more than allowed limit");
-                    return View("Scheduler", Sch);
+                    if (!ds.IsDistanceBetweenLocationsOk(Sch.SelectedLocationIds.ToList()))
+                    {
+                        ModelState.AddModelError("", "Distance between Locations are more than allowed limit");
+                        return View("Scheduler", Sch);
+                    }
                 }
                 ds.CreateSchedule(Sch);
             }
             else
             {
+                if (Sch.SelectedLocationIds.Count() > 1)
+                {
+                    if (!ds.IsDistanceBetweenLocationsOk(Sch.SelectedLocationIds.ToList()))
+                    {
+                        ModelState.AddModelError("", "Distance between Locations are more than allowed limit");
+                        return View("Scheduler", Sch);
+                    }
+                }
                 ds.UpdateSchedule(Sch);
             }
             

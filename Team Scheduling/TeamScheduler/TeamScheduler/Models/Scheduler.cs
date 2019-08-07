@@ -66,6 +66,10 @@ namespace TeamScheduler.Models
 
         public bool IsTournamentScheduleCreated { get; set; }
 
+        [Required(ErrorMessage = "Game Duration is required")]
+        [DisplayName("Game Duration")]
+        public int GameDuration { get; set; }
+
         public System.Web.Mvc.SelectList ScheduleTypeCollection = new System.Web.Mvc.SelectList(new[]
         {
             
