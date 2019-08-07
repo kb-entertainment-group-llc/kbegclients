@@ -38,8 +38,8 @@ namespace TeamScheduler.Data
             {
                 mCn.Open();
                 string sql = @"insert into Scheduler (NumberOfGames,ScheduleType,Age,StartDate,EndDate,BracketRule,StartTime,EndTime,TimeBetweenGames, 
-                         Monday,Tuesday,Wednasday,Thursday,Friday,Saturday,Sunday) values 
-                        (" + Sch.NumberOfGames + ",'" + Sch.ScheduleType + "','" + Sch.AgeDivision + "','" + Sch.StartDate.Value.ToString("yyyy/MM/dd") + "','" + Sch.EndDate.Value.ToString("yyyy/MM/dd") + "','" + Sch.BracketRules + "','" + Sch.FromTime + "','" + Sch.EndTime + "','" + Sch.TimeBetweenGames + "'," + Sch.Monday + "," + Sch.Tuesday + "," + Sch.Wednasday + "," + Sch.Thursday + "," + Sch.Friday + "," + Sch.Saturday + "," + Sch.Sunday + ")";
+                         Monday,Tuesday,Wednasday,Thursday,Friday,Saturday,Sunday,GameDuration) values 
+                        (" + Sch.NumberOfGames + ",'" + Sch.ScheduleType + "','" + Sch.AgeDivision + "','" + Sch.StartDate.Value.ToString("yyyy/MM/dd") + "','" + Sch.EndDate.Value.ToString("yyyy/MM/dd") + "','" + Sch.BracketRules + "','" + Sch.FromTime + "','" + Sch.EndTime + "','" + Sch.TimeBetweenGames + "'," + Sch.Monday + "," + Sch.Tuesday + "," + Sch.Wednasday + "," + Sch.Thursday + "," + Sch.Friday + "," + Sch.Saturday + "," + Sch.Sunday + "," + Sch.GameDuration + ")";
                 MySqlCommand cmd = new MySqlCommand(sql, mCn);
                 cmd.ExecuteNonQuery();
                 long ScheduleId = cmd.LastInsertedId;
@@ -68,7 +68,7 @@ namespace TeamScheduler.Data
            int TotalTeams = teams.Count;
            // int TeamGames = teams.Count / 2;
            int counter=0;
-           TimeSpan GameDuration = new TimeSpan(0, 30, 0);
+           TimeSpan GameDuration = new TimeSpan(0, Sch.GameDuration, 0);
            TimeSpan DailyEndTime = ToTime.Subtract(GameDuration);
            int[] te = new int[TotalTeams-1];
            for (int i = 0; i < TotalTeams - 1;i++ )
@@ -217,14 +217,14 @@ namespace TeamScheduler.Data
             
             do
             {
-                for (int i = count; i < LocationCount; i++)
+                for (int i = count; i < LocationCount-1; i++)
                 {
-                    double distanceBetweenLocations = GetDistance(Addresses[i], Addresses[i + 1]);
+                    double distanceBetweenLocations = GetDistance(Addresses[count], Addresses[i + 1]);
                     if (distanceBetweenLocations > 5) return false;
                 }
                 count++;
 
-            } while (count > LocationCount - 1);
+            } while (count < LocationCount - 1);
             return true;
 
         }
@@ -273,7 +273,7 @@ namespace TeamScheduler.Data
             using (MySqlConnection mCn = new MySqlConnection(connectionString))
             {
                 mCn.Open();
-                string sql = @"update Scheduler set NumberOfGames=" + Sch.NumberOfGames + ",ScheduleType='" + Sch.ScheduleType + "',Age='" + Sch.AgeDivision + "',StartDate='" + Sch.StartDate.Value.ToString("yyyy/MM/dd") + "',EndDate='" + Sch.EndDate.Value.ToString("yyyy/MM/dd") + "',BracketRule='" + Sch.BracketRules + "',StartTime='" + Sch.FromTime + "',EndTime='" + Sch.EndTime + "',TimeBetweenGames='" + Sch.TimeBetweenGames + "',Monday=" + Sch.Monday + ",Tuesday=" + Sch.Tuesday + ",Wednasday=" + Sch.Wednasday + ",Thursday=" + Sch.Thursday + ",Friday=" + Sch.Friday + ",Saturday=" + Sch.Saturday + ",Sunday=" + Sch.Sunday + " where scheduleid = " + Sch.ScheduleId;  
+                string sql = @"update Scheduler set NumberOfGames=" + Sch.NumberOfGames + ",ScheduleType='" + Sch.ScheduleType + "',Age='" + Sch.AgeDivision + "',StartDate='" + Sch.StartDate.Value.ToString("yyyy/MM/dd") + "',EndDate='" + Sch.EndDate.Value.ToString("yyyy/MM/dd") + "',BracketRule='" + Sch.BracketRules + "',StartTime='" + Sch.FromTime + "',EndTime='" + Sch.EndTime + "',TimeBetweenGames='" + Sch.TimeBetweenGames + "',Monday=" + Sch.Monday + ",Tuesday=" + Sch.Tuesday + ",Wednasday=" + Sch.Wednasday + ",Thursday=" + Sch.Thursday + ",Friday=" + Sch.Friday + ",Saturday=" + Sch.Saturday + ",Sunday=" + Sch.Sunday + ",GameDuration=" + Sch.GameDuration + " where scheduleid = " + Sch.ScheduleId;  
                 MySqlCommand cmd = new MySqlCommand(sql, mCn);
                 cmd.ExecuteNonQuery();
 
@@ -347,7 +347,7 @@ namespace TeamScheduler.Data
                 MySqlDataReader rdr = cmd.ExecuteReader();
                 if (rdr.Read())
                 {
-                    Scheduler Model = new Scheduler { ScheduleId = (int)rdr["ScheduleId"], ScheduleType = rdr["ScheduleType"].ToString(), NumberOfGames = (int)rdr["NumberOfGames"], StartDate = ((DateTime)rdr["StartDate"]), EndDate = (DateTime)rdr["EndDate"], AgeDivision = (string)rdr["Age"], BracketRules = (string)rdr["BracketRule"], EndTime = (TimeSpan)rdr["EndTime"], FromTime = (TimeSpan)rdr["StartTime"], TimeBetweenGames = (int)rdr["TimeBetweenGames"], Sunday = (bool)rdr["Sunday"], Monday = (bool)rdr["Monday"], Tuesday = (bool)rdr["Tuesday"], Wednasday = (bool)rdr["Wednasday"], Thursday = (bool)rdr["Thursday"], Friday = (bool)rdr["Friday"], Saturday = (bool)rdr["Saturday"]};
+                    Scheduler Model = new Scheduler { ScheduleId = (int)rdr["ScheduleId"], ScheduleType = rdr["ScheduleType"].ToString(), NumberOfGames = (int)rdr["NumberOfGames"], StartDate = ((DateTime)rdr["StartDate"]), EndDate = (DateTime)rdr["EndDate"], AgeDivision = (string)rdr["Age"], BracketRules = (string)rdr["BracketRule"], EndTime = (TimeSpan)rdr["EndTime"], FromTime = (TimeSpan)rdr["StartTime"], TimeBetweenGames = (int)rdr["TimeBetweenGames"], Sunday = (bool)rdr["Sunday"], Monday = (bool)rdr["Monday"], Tuesday = (bool)rdr["Tuesday"], Wednasday = (bool)rdr["Wednasday"], Thursday = (bool)rdr["Thursday"], Friday = (bool)rdr["Friday"], Saturday = (bool)rdr["Saturday"], GameDuration = (int)rdr["GameDuration"] };
                     rdr.Close();
                     mCn.Close();
                      return Model;
